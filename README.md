@@ -28,4 +28,4 @@ PostgreSQL: Relational database management system (RDBMS) used to store and quer
 - Customer Information: Data on customer demographics and rental behavior.
 - Payments: Records of transactions and revenue details.
 
-Tableau Visuals link: https://public.tableau.com/app/profile/mohammed.molla/viz/SQL_Visuals/Sheet1#1
+Tableau Visuals link: [View Tableau dashboard](https://public.tableau.com/app/profile/mohammed.molla/viz/SQL_Visuals/Sheet1#1)
