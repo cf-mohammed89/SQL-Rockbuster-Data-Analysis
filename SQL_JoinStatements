@@ -1,0 +1,119 @@
+### SQL Join stametments
+
+-- INNER JOIN (retrieves records for only customers who made payments)
+-- you want only limited information from two tables
+SELECT A.film_id,
+       A.title,
+       A.release_year,
+       B.name AS language_name
+FROM film A
+INNER JOIN language B ON A.language_id = B.language_id
+LIMIT 3;
+
+SELECT A.payment_id,
+       A.customer_id,
+       A.amount,
+       B.first_name,
+       B.last_name
+FROM payment A
+INNER JOIN customer B ON A.customer_id = B.customer_id
+
+
+--Left join (list of payments and customer names, including those payments that don’t have a customer attached to them)
+
+SELECT A.payment_id,
+       A.customer_id,
+       A.amount,
+       B.first_name,
+       B.last_name
+FROM payment A
+LEFT JOIN customer B ON A.customer_id = B.customer_id
+
+
+-- Right Join (list of payments and customer names, including those who haven’t made payments.)
+
+SELECT A.payment_id,
+       A.customer_id,
+       A.amount,
+       B.first_name,
+       B.last_name
+FROM payment A
+RIGHT JOIN customer B ON A.customer_id = B.customer_id
+
+-- Full Join gets all records from both tables 
+
+SELECT A.payment_id,
+       A.customer_id,
+       A.amount,
+       B.first_name,
+       B.last_name
+FROM payment A
+FULL JOIN customer B ON A.customer_id = B.customer_id
+
+
+-- Multiple join (join multiple tables)
+
+SELECT A.staff_id,
+       D.country
+FROM staff A
+INNER JOIN address B ON A.address_id = B.address_id
+INNER JOIN city C ON B.city_id = C.city_id
+INNER JOIN country D ON C.country_ID = D.country_ID
+
+
+-- Multiple join GROUP BY
+
+SELECT D.country,
+       COUNT(staff_id)
+FROM staff A
+INNER JOIN address B ON A.address_id = B.address_id
+INNER JOIN city C ON B.city_id = C.city_id
+INNER JOIN country D ON C.country_ID = D.country_ID
+GROUP BY country
+
+--1. Write a query to find the top 10 countries for Rockbuster in terms of customer numbers.
+SELECT D.country,
+		COUNT(customer_id)
+FROM customer A
+INNER JOIN address B on A.address_id = B.address_id
+INNER JOIN city C on B.city_id = C.city_id
+INNER JOIN country D on C.country_id = D.country_id
+GROUP BY D.country
+ORDER BY COUNT(customer_id) DESC
+LIMIT 10;
+
+
+--2. write a query to identify the top 10 cities that fall within the top 10 countries you identified in step 1
+
+SELECT D.country AS top_10_country,
+       C.city AS top_10_cities,
+	   COUNT(customer_id) AS total_customers
+FROM customer A
+INNER JOIN address B ON A.address_id = B.address_id
+INNER JOIN city C ON B.city_ID = C.city_id
+INNER JOIN country D ON C.country_id = D.country_id
+WHERE D.country IN (SELECT top_10_country FROM top_10_countries_cities)
+GROUP BY D.country, C.city
+ORDER BY COUNT(customer_id) DESC
+LIMIT 10;
+
+
+--3 write a query to find the top 5 customers from the top 10 cities who’ve paid the highest total amounts to Rockbuster. 
+
+SELECT A.customer_id,
+	   A.first_name,
+	   A.last_name,
+	   D.country,
+	   C.city,
+	   SUM(E.amount) AS total_paid
+FROM customer A
+INNER JOIN address B ON A.address_id = B.address_id
+INNER JOIN city C ON B.city_ID = C.city_id
+INNER JOIN country D ON C.country_id = D.country_id
+INNER JOIN payment E ON A.customer_id = E.customer_id
+WHERE c.city IN (SELECT top_10_cities FROM top_5_customers)
+GROUP BY A.customer_id, A.first_name, A.last_name, D.country, C.city
+ORDER BY SUM(E.amount) DESC
+LIMIT 5;
+	   
+
