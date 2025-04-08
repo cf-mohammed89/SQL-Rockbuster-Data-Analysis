@@ -1,0 +1,44 @@
+### This purpose of this SQL query is to calculates the average amount spent by the top 5 customers, based on their total payment amount. The query uses CTEs to sequentially filter and aggregate data from the database.
+
+--1. Query to find the top 10 countries for Rockbuster in terms of customer numbers.
+CREATE VIEW top_10_countries AS
+SELECT D.country,
+		COUNT(customer_id)
+FROM customer A
+INNER JOIN address B on A.address_id = B.address_id
+INNER JOIN city C on B.city_id = C.city_id
+INNER JOIN country D on C.country_id = D.country_id
+GROUP BY D.country
+ORDER BY COUNT(customer_id) DESC
+LIMIT 10;
+
+--2. Query to identify the top 10 cities that fall within the top 10 countries
+
+CREATE VIEW top_10_cities AS
+SELECT D.country AS top_10_country,
+	   COUNT(A.customer_id) as total_customers
+FROM customer A
+INNER JOIN address B ON A.address_id = B.address_id
+INNER JOIN city C ON B.city_ID = C.city_id
+INNER JOIN country D ON C.country_id = D.country_id
+GROUP BY D.country
+ORDER BY COUNT(customer_id) DESC
+LIMIT 10;
+
+--3 Query to find the top 5 customers from the top 10 cities who’ve paid the highest total amounts to Rockbuster. 
+CREATE VIEW top_5_customers AS
+SELECT A.customer_id,
+	   A.first_name,
+	   A.last_name,
+	   D.country,
+	   C.city,
+	   SUM(E.amount) AS total_paid
+FROM customer A
+INNER JOIN address B ON A.address_id = B.address_id
+INNER JOIN city C ON B.city_ID = C.city_id
+INNER JOIN country D ON C.country_id = D.country_id
+INNER JOIN payment E ON A.customer_id = E.customer_id
+WHERE c.city IN (SELECT top_10_cities FROM top_5_customers)
+GROUP BY A.customer_id, A.first_name, A.last_name, D.country, C.city
+ORDER BY SUM(E.amount) DESC
+LIMIT 5;
