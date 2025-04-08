@@ -1,0 +1,226 @@
+### SQL methods for data cleaning and preparation for analysis
+
+--Delete any duplicate records found by column--
+SELECT title,
+       release_year,
+       language_id,
+       rental_duration,
+       COUNT(*)
+FROM film
+GROUP BY title,
+         release_year,
+         language_id,
+         rental_duration
+HAVING COUNT(*) >1;
+
+--Shows only unique records from the film table (using group by)--
+SELECT title,
+       release_year,
+       language_id,
+       rental_duration
+FROM film
+GROUP BY title,
+         release_year,
+         language_id,
+         rental_duration;
+
+--Shows only unique records from the film table (using DISTINCT
+SELECT DISTINCT title,
+                release_year,
+                language_id,
+                rental_duration
+FROM film;
+
+SELECT rating
+FROM film 
+GROUP BY rating
+
+--TO UPDATE Non-Uniform data--
+UPDATE film
+SET rating = 'G'
+WHERE rating IN ('gen',
+                 'g',
+                 'General')
+
+--imputing missing values with the AVG value
+UPDATE tablename
+SET = AVG(col1)
+WHERE col1 IS NULL
+
+-- To find MODE (most frequent value of column) in the table 
+SELECT MODE() WITHIN GROUP (ORDER BY rating)
+       AS modal_value
+FROM film;
+
+--count value
+SELECT rating,
+       COUNT(*)
+FROM film
+GROUP BY rating
+ORDER BY COUNT(*)
+
+
+CREATE VIEW  film_english_view AS
+SELECT * FROM film
+WHERE language_id = 1 -- English Language code is 1;
+
+select * from film_cantonese_view
+
+CREATE VIEW  film_cantonese_view AS
+SELECT * FROM film
+WHERE language_id = 2 -- Cantonese Language code is 2;
+
+
+--1.1 finding non-uniform data
+
+SELECT DISTINCT customer_id, store_id,first_name, last_name, email, 
+address_id, activebool, create_date, last_update, active
+FROM customer
+
+
+SELECT DISTINCT film_id, title, description, release_year, language_id, rental_duration, 
+rental_rate, length, replacement_cost, rating, last_update, special_features, fulltext
+FROM film
+
+--1.2 finding duplicate data
+
+
+SELECT customer_id, store_id,first_name, last_name, email, 
+address_id, activebool, create_date, last_update, active
+FROM customer
+GROUP BY
+customer_id, store_id,first_name, last_name, email, 
+address_id, activebool, create_date, last_update, active
+HAVING COUNT(*) > 1
+
+
+SELECT film_id, title, description, release_year, language_id, rental_duration, 
+rental_rate, length, replacement_cost, rating, last_update, special_features, fulltext
+FROM film
+GROUP BY film_id, title, description, release_year, language_id, rental_duration, 
+rental_rate, length, replacement_cost, rating, last_update, special_features, fulltext
+HAVING COUNT (*) > 1
+
+
+SELECT title, COUNT(*)
+FROM film
+GROUP BY title
+HAVING COUNT(*)>1; 
+
+
+--1.3 handling missing data
+
+SELECT *
+FROM film
+WHERE film_id IS NULL
+OR title IS NULL
+OR description IS NULL
+OR release_year IS NULL
+OR language_id IS NULL
+OR rental_duration IS NULL
+OR rental_rate IS NULL
+OR length IS NULL
+OR replacement_cost IS NULL
+OR rating IS NULL
+OR last_update IS NULL
+OR special_features IS NULL
+OR fulltext IS NULL;
+
+SELECT * FROM customer
+WHERE customer_id IS NULL OR
+store_id IS NULL OR
+first_name IS NULL OR
+last_name IS NULL OR
+Email IS NULL OR
+address_id IS NULL OR
+activebool IS NULL OR
+create_date IS NULL OR
+last_update IS NULL OR
+active IS NULL;
+
+
+--2 Summarize your data: Use SQL to calculate descriptive statistics for both the film table and the customer table. 
+--For numerical columns, this means finding the minimum, maximum, and average values. 
+--For non-numerical columns, calculate the mode value.
+
+
+SELECT COUNT (*) AS count_rows,
+MIN (release_year) AS earlies_released_year,
+MAX (release_year) AS leastest_released_year,
+AVG (release_year) AS average_released_year,
+COUNT (release_year) AS count_released_year,
+MIN (rental_duration) AS minimum_rental_duration,
+MAX (rental_duration) AS maximum_rental_duration,
+AVG (rental_duration) AS average_rental_duration,
+COUNT (rental_duration) AS count_rental_duration,
+MIN(rental_rate) AS minimum_rental_rate,
+MAX (rental_rate) AS maximum_rental_rate,
+AVG (rental_rate) AS average_rental_rate,
+COUNT (rental_rate) AS count_rental_rate,
+MIN (length) AS minimum_film_length,
+MAX (length) AS maximum_film_length,
+AVG (length) AS average_film_length,
+COUNT (length) AS count_film_length,
+MIN (replacement_cost) AS minimum_replacement_cost,
+MAX (replacement_cost) AS maximum_replacement_cost,
+AVG (replacement_cost) AS average_replacement_cost,
+COUNT (replacement_cost) AS count_replacement_cost
+FROM film;
+
+
+SELECT COUNT (*) as row_count,
+MIN(customer_id),
+MAX(customer_id),
+AVG(customer_id),
+COUNT(customer_id),
+MIN(store_id),
+MAX(store_id),
+AVG(store_id),
+COUNT(store_id),
+MIN(address_id),
+MAX(address_id),
+AVG(address_id),
+COUNT(address_id)
+FROM customer;
+
+Select * from film
+
+
+--finding non numerical using MODE
+
+
+SELECT MODE() WITHIN GROUP (ORDER BY rating),
+	   MODE() WITHIN GROUP (ORDER BY title) AS movie_title,
+       MODE() WITHIN GROUP (ORDER BY description) AS movie_summary
+FROM film;
+
+
+select * from customer
+
+SELECT MODE() WITHIN GROUP (ORDER BY first_name),
+	   MODE() WITHIN GROUP (ORDER BY last_name),
+	   MODE() WITHIN GROUP (ORDER BY email)
+FROM customer;
+
+
+SELECT first_name, COUNT(first_name), last_name, COUNT(last_name)
+FROM customer
+WHERE first_name = 'Jamie' OR last_name = 'Abney'
+GROUP BY first_name, last_name;
+
+
+
+
+-- to count how many time a value appears in the column
+SELECT description, COUNT(description)
+FROM film
+WHERE description = 'A Action-Packed Character Study of a Astronaut And a Explorer who must Reach a Monkey in A MySQL Convention'
+GROUP BY description;
+
+
+-- to count how many of each value of the column appears 
+SELECT title, COUNT(title)
+FROM film
+GROUP BY title;
+
+
